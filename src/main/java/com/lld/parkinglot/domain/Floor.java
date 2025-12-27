@@ -1,36 +1,38 @@
 package com.lld.parkinglot.domain;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Floor {
-    private final String id;
-    private final Map<SpotType, List<Spot>> spots;
 
-    public Floor(String id, Map<SpotType, List<Spot>> spots) {
+    private final String id;
+    private final Map<SpotType, List<Spot>> spotsByType;
+
+    public Floor(String id, Map<SpotType, List<Spot>> spotsByType) {
         this.id = id;
-        this.spots = spots;
+        this.spotsByType = spotsByType;
     }
 
     public String getId() {
         return id;
     }
 
-    public Map<SpotType, List<Spot>> getSpots() {
-        return spots;
+    public Map<SpotType, List<Spot>> emptySpots() {
+        Map<SpotType, List<Spot>> result = new EnumMap<>(SpotType.class);
+
+        for (var entry : spotsByType.entrySet()) {
+            for (Spot spot : entry.getValue()) {
+                if (!spot.isOccupied()) {
+                    result
+                            .computeIfAbsent(entry.getKey(), k -> new ArrayList<>())
+                            .add(spot);
+                }
+            }
+        }
+        return result;
     }
 
-    public Map<SpotType, List<Spot>> emptySpots() {
-        return spots.entrySet()
-                .stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> e.getValue()
-                                .stream()
-                                .filter(spot -> !spot.isOccupied())
-                                .toList(),
-                        (a, b) -> a,
-                        () -> new EnumMap<>(SpotType.class)
-                ));
+    public boolean containsSpot(Spot spot) {
+        return spotsByType.values().stream()
+                .anyMatch(list -> list.contains(spot));
     }
 }
