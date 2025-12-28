@@ -19,7 +19,7 @@ This project is intentionally **backend-only** and **single-threaded** at the cu
 
 ---
 ## UML
-![Parking Lot UML](docs/uml.png)
+![Parking Lot UML](./docs/uml.png)
 ## Objectives
 
 - Design a clean **low-level architecture** for a parking lot
